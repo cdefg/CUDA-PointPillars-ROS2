@@ -30,14 +30,14 @@ Yet finally I succeeded in editing CMakeLists.txt and build with colcon build co
 find_package(CUDA REQUIRED)
 ```
 
-Get right path for tensorrt
+### Get right path for tensorrt
 
 ```
 set(TENSORRT_INCLUDE_DIRS /usr/include/x86_64-linux-gnu/)
 set(TENSORRT_LIBRARY_DIRS /usr/lib/x86_64-linux-gnu/)
 ```
 
-Link use `cuda_add_executable` or `cuda_add_library`
+### Link use `cuda_add_executable` or `cuda_add_library`
 
 ```cuda_add_executable(pc_process src/pc_process.cpp src/cuda_pp_ros.cpp
 src/cuda_pp_ros.cpp

@@ -39,7 +39,8 @@ set(TENSORRT_LIBRARY_DIRS /usr/lib/x86_64-linux-gnu/)
 
 ### Link use `cuda_add_executable` or `cuda_add_library`
 
-```cuda_add_executable(pc_process src/pc_process.cpp src/cuda_pp_ros.cpp
+```
+cuda_add_executable(pc_process src/pc_process.cpp src/cuda_pp_ros.cpp
 src/cuda_pp_ros.cpp
 src/pillarScatter.cpp
 src/pointpillar.cpp

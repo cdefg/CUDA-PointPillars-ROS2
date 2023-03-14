@@ -1,7 +1,63 @@
 # Modified by cdefg
-this README.md file is to be fixed
+THIS repository is not NVIDIA's original repository.
 
+# Setup and Run
+
+Prerequisites:
+ROS2(tested on galactic, Ubuntu 22.04LTS)  
+rclcpp  
+sensor_msgs  
+CUDA >= 11.3  
+TensorRT >= 8.4
+
+To compile:  
+```
+colcon build
+```
+
+# Essential Info to adapt to ROS2 system
+
+## model IO
+Original repo uses data from .bin binary files. But to build a stream processing package, this package adapt loadData() function from main.cpp.
+The PointPillars model input takes serialized lidar data. the data is serialized point by point. The points are featured and the domains must be 'x', 'y', 'z', 'intensity'. As the PointPillars algorithm input only takes original $point$ infomation, the only thing we should do is to feed the PointCloud2 data (from ROS2) and size (row_step*height, stated from PointCloud2 msg in ros.org) into data C++ pointer. 
+
+## ament building system for CUDA
+Another tough thing to adapt to ROS2 is to build with CUDA, especially ROS2's ament system. 
+Yet finally I succeeded in editing CMakeLists.txt and build with colcon build command.
+
+### for cuda
+```
+find_package(CUDA REQUIRED)
+```
+
+Get right path for tensorrt
+
+```
+set(TENSORRT_INCLUDE_DIRS /usr/include/x86_64-linux-gnu/)
+set(TENSORRT_LIBRARY_DIRS /usr/lib/x86_64-linux-gnu/)
+```
+
+Link use `cuda_add_executable` or `cuda_add_library`
+
+```cuda_add_executable(pc_process src/pc_process.cpp src/cuda_pp_ros.cpp
+src/cuda_pp_ros.cpp
+src/pillarScatter.cpp
+src/pointpillar.cpp
+src/postprocess.cpp
+src/preprocess.cpp
+
+src/postprocess_kernels.cu
+src/pillarScatterKernels.cu
+src/preprocess_kernels.cu
+)
+```
+
+# ORIGINAL Essentials Info from Nv's repo
 # PointPillars Inference with TensorRT
+
+Original Readme.md file can be found at
+https://github.com/NVIDIA-AI-IOT/CUDA-PointPillars  
+$Below$ $is$ $lite$ $version.$
 
 This repository contains sources and model for [pointpillars](https://arxiv.org/abs/1812.05784) inference using TensorRT.
 The model is created with [OpenPCDet](https://github.com/open-mmlab/OpenPCDet) and modified with onnx_graphsurgeon.
@@ -21,45 +77,6 @@ The onnx file can be converted from [pre-trained model](https://drive.google.com
 ### Prerequisites
 
 To build the pointpillars inference, **TensorRT** with PillarScatter layer and **CUDA** are needed. PillarScatter layer plugin is already implemented as a plugin for TRT in the demo.
-
-## Environments
-
-- Nvidia Jetson Xavier/Orin + Jetpack 5.0
-- CUDA 11.4 + cuDNN 8.3.2 + TensorRT 8.4.0
-
-### Compile && Run
-
-```shell
-$ sudo apt-get install git-lfs
-$ git lfs install
-$ git clone https://github.com/NVIDIA-AI-IOT/CUDA-PointPillars.git && cd CUDA-PointPillars
-$ mkdir build && cd build
-$ cmake .. && make -j$(nproc)
-$ ./demo
-```
-
-#### Performance in FP16
-
-Set Jetson to power mode with "sudo nvpmodel -m 0 && sudo jetson_clocks"
-
-```
-| Function(unit:ms) | Xavier | Orin   |
-| ----------------- | ------ | ------ |
-| GenerateVoxels    | 0.29   | 0.14   |
-| GenerateFeatures  | 0.31   | 0.15   |
-| Inference         | 20.21  | 9.12   |
-| Postprocessing    | 3.38   | 1.77   |
-| Overall           | 24.19  | 11.18  |
-```
-
-3D detection performance of moderate difficulty on the val set of KITTI dataset.
-
-```
-|                   | Car@R11 | Pedestrian@R11 | Cyclist@R11  | 
-| ----------------- | --------| -------------- | ------------ |
-| CUDA-PointPillars | 77.02   | 51.65          | 62.24        |
-| OpenPCDet         | 77.28   | 52.29          | 62.68        |
-```
 
 ## Note
 

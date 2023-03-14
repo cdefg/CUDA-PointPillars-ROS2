@@ -63,33 +63,6 @@ src/pillarScatterKernels.cu
 src/preprocess_kernels.cu
 )
 
-# cuda_add_library(cuda_pp_ros 
-
-# src/cuda_pp_ros.cpp
-# src/pillarScatter.cpp
-# src/pointpillar.cpp
-# src/postprocess.cpp
-# src/preprocess.cpp
-
-# src/postprocess_kernels.cu
-# src/pillarScatterKernels.cu
-# src/preprocess_kernels.cu
-# )
-
-# add_library(pillarScatter SHARED src/pillarScatter.cpp)
-# add_library(pillarScatterKernels SHARED src/pillarScatterKernels.cu)
-# add_library(pointpillar SHARED src/pointpillar.cpp)
-# add_library(postprocess_kernels SHARED src/postprocess_kernels.cu)
-# add_library(postprocess SHARED src/postprocess.cpp)
-# add_library(preprocess SHARED src/preprocess.cpp)
-# add_library(preprocess_kernels SHARED src/preprocess_kernels.cu)
-
-# file(GLOB_RECURSE SOURCE_FILES
-#     src/*.cu
-#     src/*.cpp
-# )
-
-
 # target_include_directories(pc_info PUBLIC
 #   $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
 #   $<INSTALL_INTERFACE:include>)

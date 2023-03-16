@@ -2,6 +2,9 @@
 #include "cuda_runtime.h"
 #include <sensor_msgs/msg/point_cloud2.hpp>
 
+#include <visualization_msgs/msg/marker_array.hpp>
+#include <visualization_msgs/msg/marker.hpp>
+
 #include <cstdio>
 
 #include "params.h"
@@ -32,7 +35,7 @@ void Getinfo(void)
   printf("\n");
 }
 
-void infer(sensor_msgs::msg::PointCloud2::SharedPtr msg){
+visualization_msgs::msg::MarkerArray infer(sensor_msgs::msg::PointCloud2::SharedPtr msg){
   cudaEvent_t start, stop;
   float elapsedTime = 0.0f;
   cudaStream_t stream = NULL;
@@ -49,7 +52,7 @@ void infer(sensor_msgs::msg::PointCloud2::SharedPtr msg){
 
   float* points = (float*)msg->data.data();
   size_t height = msg->height;
-  size_t width = msg->width;
+  // size_t width = msg->width;
   size_t row_step = msg->row_step;
   size_t length = row_step * height;
   size_t points_size = length/sizeof(float)/4;
@@ -67,15 +70,58 @@ void infer(sensor_msgs::msg::PointCloud2::SharedPtr msg){
   cudaEventRecord(stop, stream);
   cudaEventSynchronize(stop);
   cudaEventElapsedTime(&elapsedTime, start, stop);
-  std::cout<<"TIME: pointpillar: "<< elapsedTime <<" ms." <<std::endl;
+  // std::cout<<"TIME: pointpillar: "<< elapsedTime <<" ms." <<std::endl;
 
   checkCudaErrors(cudaFree(points_data));
 
+  // std::cout<<"Bndbox objs: "<< nms_pred.size()<<std::endl;
   std::cout<<"Bndbox objs: "<< nms_pred.size()<<std::endl;
+  if (nms_pred.size() > 0) {
+    std::cout<< nms_pred[0].id <<std::endl;
+    std::cout<< nms_pred[0].x <<std::endl;
+    std::cout<< nms_pred[0].y <<std::endl;
+    std::cout<< nms_pred[0].z <<std::endl;
+    std::cout <<nms_pred[0].score <<std::endl;
+  }
 
-  nms_pred.clear();
 
   checkCudaErrors(cudaEventDestroy(start));
   checkCudaErrors(cudaEventDestroy(stop));
   checkCudaErrors(cudaStreamDestroy(stream));
+
+  visualization_msgs::msg::MarkerArray objs;
+  visualization_msgs::msg::Marker obj;
+
+  for (auto &pred : nms_pred) {
+
+    if (pred.x * pred.x + pred.y * pred.y > 100.0f) {
+      continue;
+    }
+
+    obj.header.frame_id = "/rslidar";
+    obj.header.stamp = msg->header.stamp;
+    obj.ns = "objects";
+    obj.id = pred.id;
+    obj.type = visualization_msgs::msg::Marker::CUBE;
+    obj.action = visualization_msgs::msg::Marker::ADD;
+    obj.pose.position.x = pred.x;
+    obj.pose.position.y = pred.y;
+    obj.pose.position.z = pred.z;
+    obj.pose.orientation.x = 0.0;
+    obj.pose.orientation.y = 0.0;
+    obj.pose.orientation.z = 0.0;
+    obj.pose.orientation.w = 1.0;
+    obj.scale.x = pred.l;
+    obj.scale.y = pred.w;
+    obj.scale.z = pred.h;
+    obj.color.a = 0.5;
+    obj.color.r = 1.0;
+    obj.color.g = 0.0;
+    obj.color.b = 0.0;
+    objs.markers.push_back(obj);
+  }
+
+  nms_pred.clear();
+
+  return objs;
 }

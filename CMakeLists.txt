@@ -9,8 +9,9 @@ endif()
 find_package(ament_cmake REQUIRED)
 find_package(rclcpp REQUIRED)
 find_package(sensor_msgs REQUIRED)
-find_package(autoware_auto_perception_msgs REQUIRED)
+find_package(autoware_auto_perception_msgs REQUIRED message_generation)
 find_package(CUDA REQUIRED)
+find_package(visualization_msgs REQUIRED)
 
 set(CMAKE_C_COMPILER /usr/bin/gcc)
 set(CMAKE_CXX_COMPILER /usr/bin/g++)
@@ -63,31 +64,27 @@ src/pillarScatterKernels.cu
 src/preprocess_kernels.cu
 )
 
-# target_include_directories(pc_info PUBLIC
-#   $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
-#   $<INSTALL_INTERFACE:include>)
 target_include_directories(pc_process PUBLIC
   $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
   $<INSTALL_INTERFACE:include>
   ${CUDA_INCLUDE_DIRS}
   ${TENSORRT_INCLUDE_DIRS}
   )
-# target_include_directories(cuda_pp_ros PUBLIC
-#   $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
-#   $<INSTALL_INTERFACE:include>
-#   ${CUDA_INCLUDE_DIRS}
-#   ${TENSORRT_INCLUDE_DIRS})
 
 include_directories(
-  ${CUDA_INCLUDE_DIRS}
-  ${TENSORRT_INCLUDE_DIRS}
+  ${CUDA_INCLUDE_DIRS}visualization_msgs
   include
 )
 # target_compile_features(pc_info PUBLIC c_std_99 cxx_std_17)  # Require C99 and C++17
 target_compile_features(pc_process PUBLIC c_std_99 cxx_std_17)  # Require C99 and C++17
 
 # ament_target_dependencies(pc_info    rclcpp sensor_msgs autoware_auto_perception_msgs)
-ament_target_dependencies(pc_process rclcpp sensor_msgs autoware_auto_perception_msgs CUDA
+ament_target_dependencies(pc_process 
+  rclcpp 
+  sensor_msgs 
+  autoware_auto_perception_msgs 
+  CUDA 
+  visualization_msgs
 )
 # ament_target_dependencies(cuda_pp_ros 
 #   sensor_msgs 

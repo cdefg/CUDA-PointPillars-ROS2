@@ -97,7 +97,7 @@ TRT::TRT(std::string modelFile, cudaStream_t stream):stream_(stream)
     builder->destroy();
 
   } else {
-	  std::cout << "load TRT cache."<<std::endl;
+	  // std::cout << "load TRT cache."<<std::endl;
     char *data;
     unsigned int length;
 
@@ -237,7 +237,7 @@ int PointPillar::doinfer(void*points_data, unsigned int points_size, std::vector
   checkCudaErrors(cudaEventElapsedTime(&generateVoxelsTime, start_, stop_));
   unsigned int params_input_cpu;
   checkCudaErrors(cudaMemcpy(&params_input_cpu, params_input_, sizeof(unsigned int), cudaMemcpyDefault));
-  std::cout<<"find pillar_num: "<< params_input_cpu <<std::endl;
+  // std::cout<<"find pillar_num: "<< params_input_cpu <<std::endl;
 #endif
 
 #if PERFORMANCE_LOG
@@ -303,10 +303,10 @@ int PointPillar::doinfer(void*points_data, unsigned int points_size, std::vector
   checkCudaErrors(cudaEventRecord(stop_, stream_));
   checkCudaErrors(cudaEventSynchronize(stop_));
   checkCudaErrors(cudaEventElapsedTime(&doPostprocessCudaTime, start_, stop_));
-  std::cout<<"TIME: generateVoxels: "<< generateVoxelsTime <<" ms." <<std::endl;
-  std::cout<<"TIME: generateFeatures: "<< generateFeaturesTime <<" ms." <<std::endl;
-  std::cout<<"TIME: doinfer: "<< doinferTime <<" ms." <<std::endl;
-  std::cout<<"TIME: doPostprocessCuda: "<< doPostprocessCudaTime <<" ms." <<std::endl;
+  // std::cout<<"TIME: generateVoxels: "<< generateVoxelsTime <<" ms." <<std::endl;
+  // std::cout<<"TIME: generateFeatures: "<< generateFeaturesTime <<" ms." <<std::endl;
+  // std::cout<<"TIME: doinfer: "<< doinferTime <<" ms." <<std::endl;
+  // std::cout<<"TIME: doPostprocessCuda: "<< doPostprocessCudaTime <<" ms." <<std::endl;
 #endif
   return 0;
 }

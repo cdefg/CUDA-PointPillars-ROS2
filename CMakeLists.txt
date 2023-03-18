@@ -19,11 +19,11 @@ set(CUDA_INSTALL_TARGET_DIR targets/x86_64-linux)
 set(CUDA_TOOLKIT_ROOT_DIR /usr/local/cuda)
 set(CUDA_INCLUDE_DIRS ${CUDA_TOOLKIT_ROOT_DIR}/${CUDA_INSTALL_TARGET_DIR}/include)
 
-set( SMS 30 32 35 37 50 52 53 60 61 62 70 72 75 87)
+set( SMS 30 32 35 37 50 52 53 60 61 62 70 72 75 87 89)
 foreach(sm ${SMS})
 	set(GENCODE ${GENCODE} -gencode arch=compute_${sm},code=sm_${sm})
 endforeach()
-set(HIGHEST_SM 87)
+set(HIGHEST_SM 89)
 set(GENCODE ${GENCODE} -gencode arch=compute_${HIGHEST_SM},code=compute_${HIGHEST_SM})
 
 set(CUDA_NVCC_FLAGS ${CUDA_NVCC_FLAGS}
@@ -39,14 +39,16 @@ set(CUDA_NVCC_FLAGS ${CUDA_NVCC_FLAGS}
 
 # set(TENSORRT_INCLUDE_DIRS /home/e404/TensorRT-8.4.3.1/include/)
 # set(TENSORRT_LIBRARY_DIRS /home/e404/TensorRT-8.4.3.1/lib)
-set(TENSORRT_INCLUDE_DIRS /usr/include/x86_64-linux-gnu/)
-set(TENSORRT_LIBRARY_DIRS /usr/lib/x86_64-linux-gnu/)
+# set(TENSORRT_INCLUDE_DIRS /usr/include/x86_64-linux-gnu/)
+# set(TENSORRT_LIBRARY_DIRS /usr/lib/x86_64-linux-gnu/)
 
+set(TENSORRT_INCLUDE_DIRS ~/TensorRT-8.4.3.1/include)
+set(TENSORRT_LIBRARY_DIRS ~/TensorRT-8.4.3.1/lib)
 
 set(CMAKE_BUILD_TYPE "Release")
 set(CMAKE_CXX_FLAGS_RELEASE "-Wno-deprecated-declarations -O2")
 add_compile_options(-W)
-add_compile_options(-std=c++14)
+# add_compile_options(-std=c++14)
 # uncomment the following section in order to fill in
 # further dependencies manually.
 # find_package(<dependency> REQUIRED)

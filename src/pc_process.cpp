@@ -21,6 +21,7 @@ private:
 
   void callback(const PointCloud2::SharedPtr msg){
     auto marker =  infer(msg);
+    std::cout << "marker size: " << marker.markers.size() << std::endl;
     pub_->publish(marker);
   }
 public:

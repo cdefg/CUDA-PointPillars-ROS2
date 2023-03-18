@@ -4,13 +4,16 @@
 
 #include <visualization_msgs/msg/marker_array.hpp>
 #include <visualization_msgs/msg/marker.hpp>
+#include <cmath>
 
 #include <cstdio>
 
 #include "params.h"
 #include "pointpillar.h"
 
-std::string Model_File = "/home/e404/perception_ws/src/cuda_pointpillars_ros/model/pointpillar.onnx";
+#include <rclcpp/rclcpp.hpp>
+
+std::string Model_File = "/home/wly/perception_ws/src/cuda_pointpillars_ros/model/pointpillar.onnx";
 
 void Getinfo(void)
 {
@@ -94,10 +97,6 @@ visualization_msgs::msg::MarkerArray infer(sensor_msgs::msg::PointCloud2::Shared
 
   for (auto &pred : nms_pred) {
 
-    if (pred.x * pred.x + pred.y * pred.y > 100.0f) {
-      continue;
-    }
-
     obj.header.frame_id = "/rslidar";
     obj.header.stamp = msg->header.stamp;
     obj.ns = "objects";
@@ -108,9 +107,12 @@ visualization_msgs::msg::MarkerArray infer(sensor_msgs::msg::PointCloud2::Shared
     obj.pose.position.y = pred.y;
     obj.pose.position.z = pred.z;
     obj.pose.orientation.x = 0.0;
+    // obj.pose.orientation.x = cos(pred.rt / 2.0);
     obj.pose.orientation.y = 0.0;
     obj.pose.orientation.z = 0.0;
     obj.pose.orientation.w = 1.0;
+    // obj.pose.orientation.w = sin(pred.rt / 2.0);
+
     obj.scale.x = pred.l;
     obj.scale.y = pred.w;
     obj.scale.z = pred.h;
@@ -119,6 +121,8 @@ visualization_msgs::msg::MarkerArray infer(sensor_msgs::msg::PointCloud2::Shared
     obj.color.g = 0.0;
     obj.color.b = 0.0;
     objs.markers.push_back(obj);
+
+    std::cout << "id: " << pred.id << " x: " << pred.x << " y: " << pred.y << " z: " << pred.z << " score: " << pred.score << std::endl;
   }
 
   nms_pred.clear();
